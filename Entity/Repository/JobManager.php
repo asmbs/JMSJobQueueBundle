@@ -37,7 +37,7 @@ class JobManager
     private $dispatcher;
     private $registry;
     private $retryScheduler;
-    
+
     public function __construct(ManagerRegistry $managerRegistry, EventDispatcherInterface $eventDispatcher, RetryScheduler $retryScheduler)
     {
         $this->registry = $managerRegistry;
@@ -75,7 +75,7 @@ class JobManager
 
         $firstJob = $this->getJobManager()->createQuery("SELECT j FROM JMSJobQueueBundle:Job j WHERE j.command = :command AND j.args = :args ORDER BY j.id ASC")
              ->setParameter('command', $command)
-             ->setParameter('args', $args, 'json_array')
+             ->setParameter('args', $args, 'json')
              ->setMaxResults(1)
              ->getSingleResult();
 
@@ -384,7 +384,7 @@ class JobManager
     {
         $jobIds = $this->getJobManager()->getConnection()
             ->executeQuery("SELECT source_job_id FROM jms_job_dependencies WHERE dest_job_id = :id", array('id' => $job->getId()))
-            ->fetchAll(\PDO::FETCH_COLUMN);
+            ->fetchFirstColumn();
 
         return $jobIds;
     }
@@ -424,7 +424,7 @@ class JobManager
 
         return count($result);
     }
-    
+
     private function getJobManager(): EntityManager
     {
         return $this->registry->getManagerForClass(Job::class);
