@@ -38,11 +38,12 @@ class JobTest extends TestCase
 
     /**
      * @depends testConstruct
-     * @expectedException JMS\JobQueueBundle\Exception\InvalidStateTransitionException
+     *
      */
     public function testInvalidTransition(Job $job)
     {
-        $job->setState('failed');
+	    $this->expectException( \JMS\JobQueueBundle\Exception\InvalidStateTransitionException::class );
+	    $job->setState('failed');
     }
 
     /**

@@ -21,7 +21,7 @@ namespace JMS\JobQueueBundle\Entity\Repository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Util\ClassUtils;
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\JsonType;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Query\Parameter;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
@@ -45,11 +45,14 @@ class JobManager
         $this->retryScheduler = $retryScheduler;
     }
 
-    public function findJob($command, array $args = array())
+	/**
+	 * @throws \Doctrine\ORM\NonUniqueResultException
+	 */
+	public function findJob($command, array $args = array())
     {
         return $this->getJobManager()->createQuery("SELECT j FROM JMSJobQueueBundle:Job j WHERE j.command = :command AND j.args = :args")
             ->setParameter('command', $command)
-            ->setParameter('args', $args, Type::JSON_ARRAY)
+            ->setParameter('args', $args, JsonType::class)
             ->setMaxResults(1)
             ->getOneOrNullResult();
     }
@@ -63,7 +66,13 @@ class JobManager
         throw new \RuntimeException(sprintf('Found no job for command "%s" with args "%s".', $command, json_encode($args)));
     }
 
-    public function getOrCreateIfNotExists($command, array $args = array())
+	/**
+	 * @throws \Doctrine\ORM\Exception\ORMException
+	 * @throws \Doctrine\ORM\OptimisticLockException
+	 * @throws \Doctrine\ORM\NonUniqueResultException
+	 * @throws \Doctrine\ORM\NoResultException
+	 */
+	public function getOrCreateIfNotExists($command, array $args = array())
     {
         if (null !== $job = $this->findJob($command, $args)) {
             return $job;
@@ -177,7 +186,7 @@ class JobManager
             throw new \RuntimeException('$entity must be an object.');
         }
 
-        if ($entity instanceof \Doctrine\Common\Persistence\Proxy) {
+        if ($entity instanceof \Doctrine\Persistence\Proxy) {
             $entity->__load();
         }
 

@@ -3,12 +3,12 @@
 namespace JMS\JobQueueBundle\Tests\Functional;
 
 use JMS\JobQueueBundle\Retry\ExponentialRetryScheduler;
-use JMS\JobQueueBundle\Retry\RetryScheduler;
 use JMS\JobQueueBundle\Tests\Functional\TestBundle\Entity\Train;
 
 use JMS\JobQueueBundle\Tests\Functional\TestBundle\Entity\Wagon;
 
 use PHPUnit\Framework\Constraint\LogicalNot;
+use RuntimeException;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Doctrine\ORM\EntityManager;
 use JMS\JobQueueBundle\Entity\Repository\JobManager;
@@ -38,13 +38,11 @@ class JobManagerTest extends BaseTestCase
         $this->assertSame($a2, $this->jobManager->getJob('a'));
     }
 
-    /**
-     * @expectedException RuntimeException
-     * @expectedExceptionMessage Found no job for command
-     */
-    public function testGetOneThrowsWhenNotFound()
+	public function testGetOneThrowsWhenNotFound()
     {
-        $this->jobManager->getJob('foo');
+	    $this->expectExceptionMessage( "Found no job for command" );
+	    $this->expectException( RuntimeException::class );
+	    $this->jobManager->getJob('foo');
     }
 
     public function getOrCreateIfNotExists()
@@ -287,7 +285,7 @@ class JobManagerTest extends BaseTestCase
         $this->assertTrue($defEm->contains($reloadedWagon->train));
     }
 
-    protected function setUp()
+    protected function setUp() : void
     {
         $this->createClient();
         $this->importDatabaseSchema();
