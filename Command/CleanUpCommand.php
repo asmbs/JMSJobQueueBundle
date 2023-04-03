@@ -2,7 +2,7 @@
 
 namespace JMS\JobQueueBundle\Command;
 
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManager;
 use JMS\JobQueueBundle\Entity\Job;
@@ -86,7 +86,13 @@ class CleanUpCommand extends Command
         } while ($job !== null);
     }
 
-    private function cleanUpExpiredJobs(EntityManager $em, Connection $con, InputInterface $input)
+	/**
+	 * @throws \Doctrine\ORM\OptimisticLockException
+	 * @throws \Throwable
+	 * @throws \Doctrine\ORM\Exception\ORMException
+	 * @throws \Doctrine\DBAL\Exception
+	 */
+	private function cleanUpExpiredJobs(EntityManager $em, Connection $con, InputInterface $input)
     {
         $incomingDepsSql = $con->getDatabasePlatform()->modifyLimitQuery("SELECT 1 FROM jms_job_dependencies WHERE dest_job_id = :id", 1);
 
@@ -97,8 +103,8 @@ class CleanUpCommand extends Command
             $count++;
 
             $result = $con->executeQuery($incomingDepsSql, array('id' => $job->getId()));
-            if ($result->fetchColumn() !== false) {
-                $em->transactional(function() use ($em, $job) {
+            if ($result->fetchFirstColumn() !== false) {
+                $em->wrapInTransaction(function() use ($em, $job) {
                     $this->resolveDependencies($em, $job);
                     $em->remove($job);
                 });

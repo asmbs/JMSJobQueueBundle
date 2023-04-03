@@ -11,7 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Console\Application as BaseApplication;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Debug\Exception\FlattenException;
+use Symfony\Component\ErrorHandler\Exception\FlattenException;
 use Symfony\Component\HttpKernel\KernelInterface;
 
 /**
@@ -73,7 +73,7 @@ class Application extends BaseApplication
         foreach ($characteristics as $name => $value) {
             $this->insertStatStmt->bindValue('name', $name);
             $this->insertStatStmt->bindValue('value', $value);
-            $this->insertStatStmt->execute();
+            $this->insertStatStmt->executeQuery();
         }
     }
 
