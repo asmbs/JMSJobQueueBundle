@@ -2,6 +2,7 @@
 
 namespace JMS\JobQueueBundle\Entity\Type;
 
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\ObjectType;
 
 class SafeObjectType extends ObjectType
