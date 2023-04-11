@@ -59,7 +59,7 @@ If you want to schedule a job :
     $job->setExecuteAfter($date);
     $em->persist($job);
     $em->flush();
-    
+
 Fine-grained Concurrency Control through Queues
 ===============================================
 If you would like to better control the concurrency of a specific job type, you can use queues:

@@ -4,6 +4,7 @@ namespace JMS\JobQueueBundle\Tests\Functional;
 
 use Doctrine\ORM\EntityManager;
 use JMS\JobQueueBundle\Entity\Job;
+use JMS\JobQueueBundle\JMSJobQueueBundle;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 
@@ -21,7 +22,7 @@ class CronTest extends BaseTestCase
         $this->assertEquals(2, substr_count($output, 'Scheduling command scheduled-every-few-seconds'), $output);
     }
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->createClient(array('config' => 'persistent_db.yml'));
 
@@ -35,12 +36,13 @@ class CronTest extends BaseTestCase
         $this->app->setAutoExit(false);
         $this->app->setCatchExceptions(false);
 
-        $this->em = self::$kernel->getContainer()->get('doctrine')->getManagerForClass('JMSJobQueueBundle:Job');
+        $this->em = self::$kernel->getContainer()->get('doctrine')->getManagerForClass(Job::class);
     }
 
     private function doRun(array $args = array())
     {
         array_unshift($args, 'jms-job-queue:schedule');
+//        $output = new \JMS\JobQueueBundle\Tests\Functional\MemoryOutput();
         $output = new MemoryOutput();
         $this->app->run(new ArrayInput($args), $output);
 
