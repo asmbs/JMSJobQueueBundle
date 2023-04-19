@@ -1,3 +1,7 @@
+composer.lock
 phpunit.xml
 vendor/
 .idea/
+var/
+.DS_STORE
+.phpunit*
