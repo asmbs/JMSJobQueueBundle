@@ -52,7 +52,7 @@ class JobManager
     {
         return $this->getJobManager()->createQuery("SELECT j FROM JMSJobQueueBundle:Job j WHERE j.command = :command AND j.args = :args")
             ->setParameter('command', $command)
-            ->setParameter('args', $args, JsonType::class)
+            ->setParameter('args', $args, 'json')
             ->setMaxResults(1)
             ->getOneOrNullResult();
     }
@@ -144,7 +144,7 @@ class JobManager
         list($relClass, $relId) = $this->getRelatedEntityIdentifier($relatedEntity);
 
         $rsm = new ResultSetMappingBuilder($this->getJobManager());
-        $rsm->addRootEntityFromClassMetadata('JMSJobQueueBundle:Job', 'j');
+        $rsm->addRootEntityFromClassMetadata(Job::class, 'j');
 
         return $this->getJobManager()->createNativeQuery("SELECT j.* FROM jms_jobs j INNER JOIN jms_job_related_entities r ON r.job_id = j.id WHERE r.related_class = :relClass AND r.related_id = :relId", $rsm)
                     ->setParameter('relClass', $relClass)
@@ -162,7 +162,7 @@ class JobManager
         list($relClass, $relId) = $this->getRelatedEntityIdentifier($relatedEntity);
 
         $rsm = new ResultSetMappingBuilder($this->getJobManager());
-        $rsm->addRootEntityFromClassMetadata('JMSJobQueueBundle:Job', 'j');
+        $rsm->addRootEntityFromClassMetadata(Job::class, 'j');
 
         $sql = "SELECT j.* FROM jms_jobs j INNER JOIN jms_job_related_entities r ON r.job_id = j.id WHERE r.related_class = :relClass AND r.related_id = :relId AND j.command = :command";
         $params = new ArrayCollection();
@@ -205,7 +205,7 @@ class JobManager
     public function findPendingJob(array $excludedIds = array(), array $excludedQueues = array(), array $restrictedQueues = array())
     {
         $qb = $this->getJobManager()->createQueryBuilder();
-        $qb->select('j')->from('JMSJobQueueBundle:Job', 'j')
+        $qb->select('j')->from(Job::class, 'j')
             ->orderBy('j.priority', 'ASC')
             ->addOrderBy('j.id', 'ASC');
 
@@ -278,7 +278,7 @@ class JobManager
 
         if (null !== $this->dispatcher && ($job->isRetryJob() || 0 === count($job->getRetryJobs()))) {
             $event = new StateChangeEvent($job, $finalState);
-            $this->dispatcher->dispatch('jms_job_queue.job_state_change', $event);
+            $this->dispatcher->dispatch($event, 'jms_job_queue.job_state_change');
             $finalState = $event->getNewState();
         }
 

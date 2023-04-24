@@ -76,7 +76,7 @@ Then, update your dependencies using
 And add the JMSDiExtraBundle and JMSAopBundle to your appKernel.php:
 
 .. code-block :: php
-    
+
     <?php
 
     // in AppKernel::registerBundles()
@@ -109,7 +109,7 @@ Below, is a sample configuration that you can use with supervisord:
 .. code-block :: ini
 
     [program:jms_job_queue_runner]
-    command=php %kernel.root_dir%/console jms-job-queue:run --env=prod --verbose
+    command=php %kernel.project_dir%/console jms-job-queue:run --env=prod --verbose
     process_name=%(program_name)s
     numprocs=1
     directory=/tmp
