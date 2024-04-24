@@ -1,6 +1,6 @@
 {
     "name":         "jms/job-queue-bundle",
-    "description":  "Allows to run and schedule Symfony console commands as background jobs.",
+    "description":  "Allows to run and schedule Symfony console commands as background jobs. ASMBS fork.",
     "keywords":     ["job","queue", "background", "cron", "scheduled"],
     "homepage":     "http://jmsyst.com/bundles/JMSJobQueueBundle",
     "type":         "symfony-bundle",
