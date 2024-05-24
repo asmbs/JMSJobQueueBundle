@@ -1,6 +1,8 @@
 JMSJobQueueBundle [![Build Status](https://secure.travis-ci.org/schmittjoh/JMSJobQueueBundle.png?branch=master)](http://travis-ci.org/schmittjoh/JMSJobQueueBundle)
 =================
 
+Fork of JMS JobQueueBundle for ASMBS.
+
 Documentation: 
 [Resources/doc](http://jmsyst.com/bundles/JMSJobQueueBundle)
     
