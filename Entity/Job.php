@@ -123,7 +123,7 @@ class Job
     private $command;
 
     /** @ORM\Column(type = "json") */
-    private string $args;
+    private array $args;
 
     /**
      * @ORM\ManyToMany(targetEntity = "Job", fetch = "EAGER")
@@ -212,7 +212,7 @@ class Job
         }
 
         $this->command = $command;
-        $this->args = json_encode($args);
+        $this->args = $args;
         $this->state = $confirmed ? self::STATE_PENDING : self::STATE_NEW;
         $this->queue = $queue;
         $this->priority = $priority * -1;
@@ -364,7 +364,7 @@ class Job
 
     public function getArgs()
     {
-        return json_decode($this->args, true);
+        return $this->args;
     }
 
     public function getRelatedEntities()
